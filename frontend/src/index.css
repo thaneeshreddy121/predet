@@ -1,0 +1,594 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================
+   GLOBAL STYLES
+   ========================================================= */
+
+.homepage-container {
+  font-family: Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 10px;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* =========================================================
+   HEADER / NAVBAR
+   ========================================================= */
+
+.homepage-header {
+  background-color: transparent;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #333;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 65px;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+.app-name {
+  font-size: 1.8rem;
+  font-weight: bolder;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family:
+    "Lucida Sans",
+    "Lucida Sans Regular",
+    "Lucida Grande",
+    "Lucida Sans Unicode",
+    Geneva,
+    Verdana,
+    sans-serif;
+}
+
+.navigation-bar {
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  top: 0;
+  z-index: 100;
+  background: #7fb2e6;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4.5px);
+  -webkit-backdrop-filter: blur(4.5px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  align-items: center;
+}
+
+.nav-links li {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.user-greeting {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.4rem 0.6rem;
+  border-radius: 5px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+  font-family: inherit;
+}
+
+.logout-btn:hover {
+  background-color: #e65100;
+  color: #fffbea;
+}
+
+.nav-links a:hover {
+  background-color: #e65100;
+  color: #fffbea;
+}
+
+.nav-links .active {
+  background-color: #f67d20;
+  color: #fffbea;
+  font-weight: bold;
+}
+
+/* =========================================================
+   MOBILE NAVIGATION
+   ========================================================= */
+
+.mobile-menu-toggle {
+  display: none;
+  cursor: pointer;
+  z-index: 110;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: rgba(127, 178, 230, 0.95);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 0;
+    z-index: 90;
+    max-height: 70vh;
+    overflow-y: auto;
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      visibility 0.3s;
+  }
+
+  .nav-links.mobile-menu-open {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .nav-links li {
+    width: 100%;
+    text-align: center;
+    margin: 0.3rem 0;
+  }
+
+  .nav-links a,
+  .logout-btn,
+  .user-greeting {
+    width: calc(100% - 1rem);
+    text-align: center;
+    padding: 0.7rem;
+    margin: 0 0.5rem;
+    border-radius: 8px;
+  }
+}
+
+/* =========================================================
+   HOME PAGE / HERO
+   ========================================================= */
+
+.hero-section {
+  color: white;
+  text-align: center;
+  padding: 4rem 2rem;
+  border-bottom: none;
+  border-radius: 8px;
+
+  background: linear-gradient(
+    to right,
+    #0066cc,
+    #0088ff
+  );
+
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background: rgb(0 94 203);
+  box-shadow: inset 0px 0px 20px 6px rgba(0, 51, 102, 0.3);
+
+  backdrop-filter: blur(4.5px);
+  -webkit-backdrop-filter: blur(4.5px);
+
+  border-radius: 10px;
+  border: 1px solid rgb(142 47 47 / 12%);
+
+  z-index: -1;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  margin: 1rem 0;
+}
+
+.cta-buttons .cta-btn {
+  background-color: #f67d20;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  margin: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border-radius: 5px;
+}
+
+.cta-buttons .cta-btn:hover {
+  background-color: #e65100;
+}
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .features-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feature-card {
+  background-color: #e6f0ff;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 102, 204, 0.2);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 12px rgba(0, 102, 204, 0.3);
+}
+
+.feature-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.feature-description {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.homepage-footer {
+  background-color: #0066cc;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+  border-top: none;
+  border-radius: 8px;
+}
+
+.footer-links ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.footer-links li a {
+  color: white;
+  text-decoration: none;
+}
+
+.contact-info p {
+  margin: 15px 0;
+}
+
+.download-links .download-btn {
+  background-color: white;
+  color: #ff6f00;
+  padding: 0.8rem 1.5rem;
+  margin: 0.5rem;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.download-links .download-btn:hover {
+  background-color: #e65100;
+  color: white;
+}
+
+/* =========================================================
+   HERO IMAGE
+   ========================================================= */
+
+.hero-image {
+  height: 400px;
+  width: 100%;
+  object-fit: contain;
+}
+
+/* =========================================================
+   PREDICTION PAGE
+   ========================================================= */
+
+.prediction-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.prediction-box {
+  background: rgba(0, 102, 204, 0.15);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 102, 204, 0.3);
+  box-shadow: 0 8px 12px rgba(0, 102, 204, 0.2);
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  padding: 2rem;
+}
+
+.prediction-box button {
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 8px;
+  outline: none;
+  border: none;
+
+  background: linear-gradient(
+    45deg,
+    #f67d20,
+    #e65100
+  );
+
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.prediction-box button:hover {
+  background: linear-gradient(
+    45deg,
+    #e65100,
+    #f67d20
+  );
+
+  transform: scale(1.05);
+}
+
+.prediction-box input {
+  width: 80%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #000;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 8px;
+  outline: none;
+}
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family:
+    "Segoe UI",
+    Tahoma,
+    Geneva,
+    Verdana,
+    sans-serif;
+}
+
+/* =========================================================
+   STAR BACKGROUND
+   Used by the remaining home/about components
+   ========================================================= */
+
+#star-container {
+  background: linear-gradient(
+    to bottom,
+    #0f0c29,
+    #302b63,
+    #24243e
+  );
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background-color: #fff;
+  border-radius: 50%;
+  animation: twinkle 5s infinite;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+}
+
+/* =========================================================
+   SHOOTING STAR
+   ========================================================= */
+
+@keyframes shootingStar {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(200px) translateY(200px) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.shooting-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 1)
+  );
+
+  box-shadow: 0 0 10px 2px white;
+  border-radius: 50%;
+  animation: shootingStar 2s linear infinite;
+}
+
+/* =========================================================
+   GLASS EFFECT
+   ========================================================= */
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* =========================================================
+   MESSAGE ANIMATION
+   ========================================================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-animation {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* =========================================================
+   LOGO PULSE
+   Used by Navbar
+   ========================================================= */
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 51, 51, 0.4);
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 51, 51, 0.7);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 51, 51, 0);
+    transform: scale(1);
+  }
+}
+
+.logo-container {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logo-container .logo {
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease;
+}
+
+.pulse-effect {
+  animation: pulse 1s infinite;
+}
