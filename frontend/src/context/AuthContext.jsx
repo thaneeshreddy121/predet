@@ -7,40 +7,48 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // LIVE BACKEND
+  const BASE_URL = 'https://predet.vercel.app';
+
+  // LOCAL BACKEND (for local development)
+  // const BASE_URL = 'http://127.0.0.1:5000';
+
   // Check if user is logged in on initial load
   useEffect(() => {
     const checkAuthStatus = async () => {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         setLoading(false);
         return;
       }
-      
+
       try {
-        // Verify token with backend
-        const response = await fetch('http://127.0.0.1:5000/auth/verify-token', {
+        const response = await fetch(`${BASE_URL}/auth/verify-token`, {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           setUser(data.user);
           setIsAuthenticated(true);
         } else {
-          // If token is invalid, remove it
           localStorage.removeItem('token');
+          setUser(null);
+          setIsAuthenticated(false);
         }
       } catch (error) {
         console.error('Error verifying token:', error);
         localStorage.removeItem('token');
+        setUser(null);
+        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
     };
-    
+
     checkAuthStatus();
   }, []);
 
@@ -59,7 +67,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        loading,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
