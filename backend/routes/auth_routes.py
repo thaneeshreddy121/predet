@@ -109,7 +109,7 @@ def send_reset_otp_email(
         body = f"""
 Hello,
 
-You requested to reset your MEDS-AI password.
+You requested to reset your PREDET-AI password.
 
 Your OTP is:
 
@@ -120,7 +120,7 @@ This OTP is valid for 10 minutes.
 If you did not request a password reset, you can safely ignore this email.
 
 Regards,
-MEDS-AI Team
+PREDET-AI Team
 """
 
         message.attach(

@@ -39,20 +39,18 @@ const Navbar = ({ className }) => {
   return (
     <>
       <header className={`navigation-bar ${className || ""}`}>
-        <div 
-          className="logo-container"
-        >
-          <img 
-            className="logo" 
-         ///   src={logo} 
-            alt="image" 
-          /> 
-          <span 
+        <Link to="/" className="logo-container" style={{ textDecoration: "none" }}>
+          <img
+            className="logo"
+            src={logo}
+            alt="MEDS-AI logo"
+          />
+          <span
             className="app-name"
           >
-            
+            PREDET-AI
           </span>
-        </div>
+        </Link>
         
         {/* Mobile Menu Toggle */}
         <div className="mobile-menu-toggle" onClick={toggleMenu}>
@@ -116,7 +114,7 @@ const Navbar = ({ className }) => {
                 </Link>
               </li>
               <li>
-                <Link to="/aboutus" className={isActive("/about")}>
+                <Link to="/aboutus" className={isActive("/aboutus")}>
                   About Us
                 </Link>
               </li>

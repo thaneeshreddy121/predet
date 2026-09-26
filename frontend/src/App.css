@@ -5,16 +5,16 @@
 .diabetes-page {
   min-height: calc(100vh - 70px);
   padding: 50px 20px;
-  background: linear-gradient(135deg, #f5f8ff 0%, #fff7ee 100%);
+  background: var(--paper);
 }
 
 .diabetes-card {
   max-width: 1000px;
   margin: 0 auto;
   padding: 34px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 18px 55px rgba(25, 40, 80, 0.15);
+  border-radius: var(--radius-l);
+  background: var(--paper-raised);
+  border: 1px solid var(--mist);
 }
 
 .diabetes-header {
@@ -27,27 +27,26 @@
 
 .diabetes-eyebrow {
   margin: 0 0 8px;
-  color: #ff8c00;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
+  color: var(--pulse);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .diabetes-header h1 {
   margin: 0 0 8px;
   font-size: clamp(30px, 5vw, 46px);
-  color: #18243b;
+  color: var(--ink);
 }
 
 .diabetes-header p:not(.diabetes-eyebrow) {
   margin: 0;
-  color: #667085;
+  color: var(--ink-soft);
   max-width: 680px;
 }
 
 .diabetes-icon {
-  width: 105px;
-  height: 105px;
+  width: 90px;
+  height: 90px;
   object-fit: contain;
 }
 
@@ -61,25 +60,26 @@
   display: flex;
   flex-direction: column;
   gap: 7px;
-  color: #344054;
-  font-weight: 700;
+  color: var(--ink);
+  font-weight: 600;
   font-size: 14px;
 }
 
 .diabetes-grid input {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #d0d5dd;
-  border-radius: 11px;
+  border: 1px solid var(--mist-dark);
+  border-radius: var(--radius-s);
   padding: 12px 13px;
   font-size: 15px;
+  font-family: var(--font-body);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .diabetes-grid input:focus {
-  border-color: #ff8c00;
-  box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.12);
+  border-color: var(--vital);
+  box-shadow: 0 0 0 3px var(--vital-tint);
 }
 
 .diabetes-actions {
@@ -92,39 +92,48 @@
 .diabetes-reset,
 .diabetes-submit {
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--radius-s);
   padding: 12px 22px;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
+  font-family: var(--font-body);
 }
 
 .diabetes-reset {
-  background: #eef2f6;
-  color: #344054;
+  background: var(--mist);
+  color: var(--ink);
+}
+
+.diabetes-reset:hover {
+  background: var(--mist-dark);
 }
 
 .diabetes-submit {
   color: white;
-  background: linear-gradient(135deg, #ff9c00, #ff4d55);
+  background: var(--vital);
+}
+
+.diabetes-submit:hover:not(:disabled) {
+  background: var(--vital-dark);
 }
 
 .diabetes-submit:disabled {
-  opacity: 0.65;
+  opacity: 0.6;
   cursor: wait;
 }
 
 .diabetes-error {
   margin-top: 18px;
   padding: 13px 15px;
-  border-radius: 10px;
-  color: #b42318;
-  background: #fef3f2;
+  border-radius: var(--radius-m);
+  color: var(--alert);
+  background: var(--alert-tint);
 }
 
 .diabetes-result {
   margin-top: 28px;
   padding: 22px;
-  border-radius: 16px;
+  border-radius: var(--radius-l);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -133,44 +142,45 @@
 }
 
 .diabetes-result.positive {
-  background: #fff1f0;
-  border-color: #fecdca;
+  background: var(--alert-tint);
+  border-color: #f0bdb0;
 }
 
 .diabetes-result.negative {
-  background: #effaf3;
-  border-color: #abefc6;
+  background: var(--clear-tint);
+  border-color: #a9d3c1;
 }
 
 .result-label {
   margin: 0 0 5px;
-  color: #667085;
+  color: var(--ink-soft);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .diabetes-result h2 {
   margin: 0 0 8px;
-  color: #18243b;
+  color: var(--ink);
 }
 
 .diabetes-result p {
   margin: 5px 0;
-  color: #475467;
+  color: var(--ink-soft);
 }
 
 .result-badge {
-  padding: 10px 15px;
+  padding: 8px 14px;
   border-radius: 999px;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 12px;
   background: white;
   white-space: nowrap;
+  border: 1px solid var(--mist);
 }
 
 .medical-note {
   margin: 24px 0 0;
-  color: #667085;
+  color: var(--ink-soft);
   font-size: 12px;
   line-height: 1.6;
 }

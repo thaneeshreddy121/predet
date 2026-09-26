@@ -59,7 +59,7 @@ export default function DiabetesPredictor() {
       <section className="diabetes-card">
         <div className="diabetes-header">
           <div>
-            <p className="diabetes-eyebrow">MEDS-AI • SPECIALIZED DETECTOR</p>
+            <p className="diabetes-eyebrow">PREDET-AI • SPECIALIZED DETECTOR</p>
             <h1>Diabetes Risk Detector</h1>
             <p>
               Enter the same eight clinical measurements used by the original

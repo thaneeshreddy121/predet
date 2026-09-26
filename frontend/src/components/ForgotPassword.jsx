@@ -1,53 +1,29 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-
 export default function ForgotPassword() {
-
-  const BASE_URL =
-    import.meta.env.VITE_BASE_URL;
-
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate();
-
 
   // ==========================================================
   // STATE
   // ==========================================================
 
-  const [email, setEmail] =
-    useState("");
-
-  const [otp, setOtp] =
-    useState("");
-
-  const [newPassword, setNewPassword] =
-    useState("");
-
-  const [confirmPassword, setConfirmPassword] =
-    useState("");
-
-  const [step, setStep] =
-    useState(1);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [message, setMessage] =
-    useState("");
-
-  const [devOtp, setDevOtp] =
-    useState("");
-
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [devOtp, setDevOtp] = useState("");
 
   // ==========================================================
   // REQUEST OTP
   // ==========================================================
 
   const handleSendOtp = async (e) => {
-
     e.preventDefault();
 
     setError("");
@@ -56,569 +32,237 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
+      const response = await fetch(`${BASE_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-      const response =
-        await fetch(
-          `${BASE_URL}/auth/forgot-password`,
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-              email
-            })
-          }
-        );
-
-      const data =
-        await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          "Unable to send OTP"
-        );
+        throw new Error(data.error || "Unable to send OTP");
       }
 
-      setMessage(
-        data.message ||
-        "OTP sent successfully."
-      );
-
-      // ------------------------------------------------------
-      // Development mode
-      // ------------------------------------------------------
+      setMessage(data.message || "OTP sent successfully.");
 
       if (data.dev_otp) {
-
-        setDevOtp(
-          data.dev_otp
-        );
+        setDevOtp(data.dev_otp);
       }
 
       setStep(2);
-
     } catch (err) {
-
-      setError(
-        err.message
-      );
-
+      setError(err.message);
     } finally {
-
       setLoading(false);
     }
   };
-
 
   // ==========================================================
   // RESET PASSWORD
   // ==========================================================
 
-  const handleResetPassword =
-    async (e) => {
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
 
-      e.preventDefault();
+    setError("");
+    setMessage("");
 
-      setError("");
-      setMessage("");
+    if (newPassword.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
 
-      // ------------------------------------------------------
-      // Password validation
-      // ------------------------------------------------------
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-      if (
-        newPassword.length < 6
-      ) {
+    if (!otp) {
+      setError("Please enter the OTP.");
+      return;
+    }
 
-        setError(
-          "Password must be at least 6 characters long."
-        );
+    setLoading(true);
 
-        return;
+    try {
+      const response = await fetch(`${BASE_URL}/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          otp,
+          new_password: newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to reset password");
       }
 
-      if (
-        newPassword !==
-        confirmPassword
-      ) {
+      setMessage(data.message || "Password reset successfully.");
 
-        setError(
-          "Passwords do not match."
-        );
-
-        return;
-      }
-
-      if (!otp) {
-
-        setError(
-          "Please enter the OTP."
-        );
-
-        return;
-      }
-
-      setLoading(true);
-
-      try {
-
-        const response =
-          await fetch(
-            `${BASE_URL}/auth/reset-password`,
-            {
-              method: "POST",
-
-              headers: {
-                "Content-Type":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-
-                email,
-
-                otp,
-
-                new_password:
-                  newPassword
-
-              })
-            }
-          );
-
-        const data =
-          await response.json();
-
-        if (!response.ok) {
-
-          throw new Error(
-            data.error ||
-            "Unable to reset password"
-          );
-        }
-
-        setMessage(
-          data.message ||
-          "Password reset successfully."
-        );
-
-        // ----------------------------------------------------
-        // Redirect to login
-        // ----------------------------------------------------
-
-        setTimeout(() => {
-
-          navigate("/login");
-
-        }, 1500);
-
-      } catch (err) {
-
-        setError(
-          err.message
-        );
-
-      } finally {
-
-        setLoading(false);
-      }
-    };
-
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ==========================================================
   // UI
   // ==========================================================
 
   return (
-
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
-
-      <div className="w-full max-w-md">
-
-        {/* ==================================================
-            TITLE
-            ================================================== */}
-
-        <h2 className="text-center text-2xl font-bold tracking-tight text-gray-900">
-
-          {step === 1
-            ? "Forgot Password"
-            : "Reset Password"}
-
+    <div className="auth-form-side" style={{ minHeight: "calc(100vh - 70px)" }}>
+      <div className="auth-panel message-animation">
+        <h2 className="auth-title">
+          {step === 1 ? "Forgot password" : "Reset password"}
         </h2>
+        <p className="auth-subtitle">
+          {step === 1
+            ? "We'll send a one-time code to your email."
+            : "Enter the code and choose a new password."}
+        </p>
 
+        {/* =================================================
+            STEP 1
+            ================================================= */}
 
-        {/* ==================================================
-            CARD
-            ================================================== */}
+        {step === 1 && (
+          <form onSubmit={handleSendOtp} className="auth-form">
+            <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: "0.9rem" }}>
+              Enter the email address associated with your PREDET-AI account.
+            </p>
 
-        <div className="mt-6 bg-slate-50 px-6 py-6 rounded-lg shadow-sm">
+            <div className="field">
+              <label htmlFor="reset-email" className="field-label">
+                Email address
+              </label>
+              <input
+                id="reset-email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="field-input"
+                placeholder="Enter your email"
+              />
+            </div>
 
+            {error && <div className="state-banner state-banner--error message-animation">{error}</div>}
+            {message && <div className="state-banner state-banner--success message-animation">{message}</div>}
 
-          {/* =================================================
-              STEP 1
-              ================================================= */}
+            <button type="submit" disabled={loading} className="btn btn-primary btn-block">
+              {loading ? "Sending OTP…" : "Send OTP"}
+            </button>
+          </form>
+        )}
 
-          {step === 1 && (
+        {/* =================================================
+            STEP 2
+            ================================================= */}
 
-            <form
-              onSubmit={
-                handleSendOtp
-              }
-              className="space-y-6"
+        {step === 2 && (
+          <form onSubmit={handleResetPassword} className="auth-form">
+            <p style={{ margin: 0, color: "var(--ink-soft)", fontSize: "0.9rem" }}>
+              Enter the OTP sent to <strong style={{ color: "var(--ink)" }}>{email}</strong>
+            </p>
+
+            {devOtp && (
+              <div className="dev-otp-box">
+                <p className="dev-otp-label">Development mode</p>
+                <p className="dev-otp-code">{devOtp}</p>
+                <p style={{ margin: "0.4rem 0 0", fontSize: "0.78rem", color: "var(--alert)" }}>
+                  Configure SMTP later to receive OTP by email.
+                </p>
+              </div>
+            )}
+
+            <div className="field">
+              <label htmlFor="otp" className="field-label">
+                OTP
+              </label>
+              <input
+                id="otp"
+                type="text"
+                inputMode="numeric"
+                maxLength="6"
+                required
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
+                className="field-input"
+                style={{ textAlign: "center", letterSpacing: "0.4em", fontSize: "1.1rem" }}
+                placeholder="000000"
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="new-password" className="field-label">
+                New password
+              </label>
+              <input
+                id="new-password"
+                type="password"
+                required
+                minLength="6"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="field-input"
+                placeholder="New password"
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="confirm-password" className="field-label">
+                Confirm password
+              </label>
+              <input
+                id="confirm-password"
+                type="password"
+                required
+                minLength="6"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="field-input"
+                placeholder="Confirm password"
+              />
+            </div>
+
+            {error && <div className="state-banner state-banner--error message-animation">{error}</div>}
+            {message && <div className="state-banner state-banner--success message-animation">{message}</div>}
+
+            <button type="submit" disabled={loading} className="btn btn-primary btn-block">
+              {loading ? "Resetting password…" : "Reset Password"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setStep(1);
+                setOtp("");
+                setNewPassword("");
+                setConfirmPassword("");
+                setError("");
+                setMessage("");
+                setDevOtp("");
+              }}
+              className="btn btn-ghost btn-block"
             >
-
-              <p className="text-sm text-gray-600">
-
-                Enter the email address
-                associated with your MEDS-AI
-                account. We will send you a
-                password reset OTP.
-
-              </p>
-
-
-              {/* EMAIL */}
-
-              <div>
-
-                <label
-                  htmlFor="reset-email"
-                  className="block text-sm font-medium text-gray-900"
-                >
-
-                  Email address
-
-                </label>
-
-                <div className="mt-2">
-
-                  <input
-                    id="reset-email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) =>
-                      setEmail(
-                        e.target.value
-                      )
-                    }
-                    className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
-                    placeholder="Enter your email"
-                  />
-
-                </div>
-
-              </div>
-
-
-              {/* ERROR */}
-
-              {error && (
-
-                <p className="text-red-500 text-sm">
-
-                  {error}
-
-                </p>
-
-              )}
-
-
-              {/* MESSAGE */}
-
-              {message && (
-
-                <p className="text-green-600 text-sm">
-
-                  {message}
-
-                </p>
-
-              )}
-
-
-              {/* BUTTON */}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex w-full justify-center rounded-md bg-[#FF6F00] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#d65c00] disabled:opacity-60"
-              >
-
-                {loading
-                  ? "Sending OTP..."
-                  : "Send OTP"}
-
-              </button>
-
-            </form>
-
-          )}
-
-
-          {/* =================================================
-              STEP 2
-              ================================================= */}
-
-          {step === 2 && (
-
-            <form
-              onSubmit={
-                handleResetPassword
-              }
-              className="space-y-6"
-            >
-
-              <p className="text-sm text-gray-600">
-
-                Enter the OTP sent to:
-
-              </p>
-
-              <p className="font-semibold text-gray-900">
-
-                {email}
-
-              </p>
-
-
-              {/* DEVELOPMENT OTP */}
-
-              {devOtp && (
-
-                <div className="rounded-md bg-yellow-50 border border-yellow-300 p-3">
-
-                  <p className="text-xs text-yellow-800">
-
-                    Development mode:
-
-                  </p>
-
-                  <p className="text-lg font-bold tracking-widest text-yellow-900">
-
-                    {devOtp}
-
-                  </p>
-
-                  <p className="text-xs text-yellow-700 mt-1">
-
-                    Configure SMTP later to
-                    receive OTP by email.
-
-                  </p>
-
-                </div>
-
-              )}
-
-
-              {/* OTP */}
-
-              <div>
-
-                <label
-                  htmlFor="otp"
-                  className="block text-sm font-medium text-gray-900"
-                >
-
-                  OTP
-
-                </label>
-
-                <div className="mt-2">
-
-                  <input
-                    id="otp"
-                    type="text"
-                    inputMode="numeric"
-                    maxLength="6"
-                    required
-                    value={otp}
-                    onChange={(e) =>
-                      setOtp(
-                        e.target.value.replace(
-                          /\D/g,
-                          ""
-                        )
-                      )
-                    }
-                    className="block w-full rounded-md bg-white px-3 py-2 text-center text-lg tracking-widest text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600"
-                    placeholder="000000"
-                  />
-
-                </div>
-
-              </div>
-
-
-              {/* NEW PASSWORD */}
-
-              <div>
-
-                <label
-                  htmlFor="new-password"
-                  className="block text-sm font-medium text-gray-900"
-                >
-
-                  New password
-
-                </label>
-
-                <div className="mt-2">
-
-                  <input
-                    id="new-password"
-                    type="password"
-                    required
-                    minLength="6"
-                    value={newPassword}
-                    onChange={(e) =>
-                      setNewPassword(
-                        e.target.value
-                      )
-                    }
-                    className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600"
-                    placeholder="New password"
-                  />
-
-                </div>
-
-              </div>
-
-
-              {/* CONFIRM PASSWORD */}
-
-              <div>
-
-                <label
-                  htmlFor="confirm-password"
-                  className="block text-sm font-medium text-gray-900"
-                >
-
-                  Confirm password
-
-                </label>
-
-                <div className="mt-2">
-
-                  <input
-                    id="confirm-password"
-                    type="password"
-                    required
-                    minLength="6"
-                    value={confirmPassword}
-                    onChange={(e) =>
-                      setConfirmPassword(
-                        e.target.value
-                      )
-                    }
-                    className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:outline-indigo-600"
-                    placeholder="Confirm password"
-                  />
-
-                </div>
-
-              </div>
-
-
-              {/* ERROR */}
-
-              {error && (
-
-                <p className="text-red-500 text-sm">
-
-                  {error}
-
-                </p>
-
-              )}
-
-
-              {/* MESSAGE */}
-
-              {message && (
-
-                <p className="text-green-600 text-sm">
-
-                  {message}
-
-                </p>
-
-              )}
-
-
-              {/* RESET BUTTON */}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex w-full justify-center rounded-md bg-[#FF6F00] px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#d65c00] disabled:opacity-60"
-              >
-
-                {loading
-                  ? "Resetting password..."
-                  : "Reset Password"}
-
-              </button>
-
-
-              {/* BACK */}
-
-              <button
-                type="button"
-                onClick={() => {
-
-                  setStep(1);
-                  setOtp("");
-                  setNewPassword("");
-                  setConfirmPassword("");
-                  setError("");
-                  setMessage("");
-                  setDevOtp("");
-
-                }}
-                className="w-full text-sm font-semibold text-[#FF6F00] hover:text-[#D65C00]"
-              >
-
-                Use a different email
-
-              </button>
-
-            </form>
-
-          )}
-
-
-          {/* =================================================
-              LOGIN
-              ================================================= */}
-
-          <p className="mt-6 text-center text-sm text-gray-500">
-
-            Remember your password?{" "}
-
-            <Link
-              to="/login"
-              className="text-[#FF6F00] hover:text-[#D65C00] font-semibold"
-            >
-
-              Log in
-
-            </Link>
-
-          </p>
-
-        </div>
-
+              Use a different email
+            </button>
+          </form>
+        )}
+
+        <p className="auth-footer-note">
+          Remember your password? <Link to="/login">Log in</Link>
+        </p>
       </div>
-
     </div>
   );
 }

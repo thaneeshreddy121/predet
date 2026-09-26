@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import caduceus from "../assets/caduceus.png";
 
 export default function Signup() {
-
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   const [formData, setFormData] = useState({
@@ -17,6 +17,7 @@ export default function Signup() {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -32,6 +33,7 @@ export default function Signup() {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
     try {
       const response = await fetch(`${BASE_URL}/auth/register`, {
@@ -48,7 +50,7 @@ export default function Signup() {
         throw new Error(data.error || "Registration failed");
       }
 
-      setSuccess("User registered successfully!");
+      setSuccess("User registered successfully! You can now log in.");
       setFormData({
         name: "",
         email: "",
@@ -60,94 +62,147 @@ export default function Signup() {
       });
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen w-screen">
-      {/* Left Side - Image */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gray-100 items-center justify-center">
-        <img
-          src={caduceus}
-          alt="Signup"
-          className="h-full w-full object-cover"
-        />
+    <div className="auth-shell">
+      {/* IMAGE / BRAND SIDE */}
+      <div className="auth-visual">
+        <p className="auth-visual-eyebrow">PREDET-AI • CREATE ACCOUNT</p>
+        <h2 className="auth-visual-title">Start tracking your health signals</h2>
+        <p className="auth-visual-copy">
+          Create an account to save every prediction, revisit your diabetes
+          risk history, and get results tailored to you.
+        </p>
+        <img src={caduceus} alt="" />
       </div>
 
-      {/* Right Side - Form */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-4 bg-white">
-        <div className="max-w-sm w-full p-3 border border-gray-200 rounded-md shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 text-center mb-3">
-            Create an account
-          </h2>
+      {/* FORM SIDE */}
+      <div className="auth-form-side">
+        <div className="auth-panel message-animation" style={{ maxWidth: "460px" }}>
+          <h2 className="auth-title">Create an account</h2>
+          <p className="auth-subtitle">A few details and you're set.</p>
 
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          {success && <p className="text-green-500 text-sm text-center">{success}</p>}
+          {error && (
+            <div className="state-banner state-banner--error message-animation" style={{ marginBottom: "1.1rem" }}>
+              {error}
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 gap-y-2">
-              {[
-                { label: "Name", name: "name", type: "text" },
-                { label: "Email", name: "email", type: "email" },
-                { label: "Password", name: "password", type: "password" },
-                { label: "Age", name: "age", type: "number", min: 1, max: 120 },
-                { label: "Address", name: "address", type: "textarea" },
-                { label: "Phone number", name: "contact_no", type: "text" },
-              ].map(({ label, name, type, ...rest }) => (
-                <div key={name}>
-                  <label className="block text-xs font-bold text-gray-900">{label}</label>
-                  {type === "textarea" ? (
-                    <textarea
-                      name={name}
-                      rows="2"
-                      value={formData[name]}
-                      onChange={handleChange}
-                      className="mt-1 block w-full rounded border border-gray-300 px-2 py-1 text-gray-900 shadow-sm placeholder-gray-400 focus:border-indigo-600 focus:ring-indigo-600 text-sm"
-                      {...rest}
-                    />
-                  ) : (
-                    <input
-                      type={type}
-                      name={name}
-                      value={formData[name]}
-                      onChange={handleChange}
-                      className="mt-1 block w-full rounded border border-gray-300 px-2 py-1 text-gray-900 shadow-sm placeholder-gray-400 focus:border-indigo-600 focus:ring-indigo-600 text-sm"
-                      {...rest}
-                    />
-                  )}
-                </div>
-              ))}
+          {success && (
+            <div className="state-banner state-banner--success message-animation" style={{ marginBottom: "1.1rem" }}>
+              {success}
+            </div>
+          )}
 
-              {/* Gender Selection */}
-              <div>
-                <label className="block text-xs font-bold text-gray-900">Gender</label>
-                <div className="mt-1 flex space-x-2">
-                  {["male", "female"].map((gender) => (
-                    <label key={gender} className="inline-flex items-center text-sm">
-                      <input
-                        type="radio"
-                        name="gender"
-                        value={gender}
-                        checked={formData.gender === gender}
-                        onChange={handleChange}
-                        className="h-3 w-3 border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                      />
-                      <span className="ml-1 text-gray-900">{gender.charAt(0).toUpperCase() + gender.slice(1)}</span>
-                    </label>
-                  ))}
-                </div>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="auth-grid-2">
+              <div className="field">
+                <label className="field-label">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="field-input"
+                  required
+                />
               </div>
 
-              <div className="mt-2">
-                <button
-                  type="submit"
-                  className="w-full rounded bg-[#FF6F00] px-3 py-1.5 text-white font-semibold shadow hover:bg-[#D65C00] focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 text-sm"
-                >
-                  Create Account
-                </button>
+              <div className="field">
+                <label className="field-label">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="field-input"
+                  required
+                />
               </div>
             </div>
+
+            <div className="auth-grid-2">
+              <div className="field">
+                <label className="field-label">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="field-input"
+                  required
+                />
+              </div>
+
+              <div className="field">
+                <label className="field-label">Age</label>
+                <input
+                  type="number"
+                  name="age"
+                  min="1"
+                  max="120"
+                  value={formData.age}
+                  onChange={handleChange}
+                  className="field-input"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <label className="field-label">Address</label>
+              <textarea
+                name="address"
+                rows="2"
+                value={formData.address}
+                onChange={handleChange}
+                className="field-textarea"
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label className="field-label">Phone number</label>
+              <input
+                type="text"
+                name="contact_no"
+                value={formData.contact_no}
+                onChange={handleChange}
+                className="field-input"
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label className="field-label">Gender</label>
+              <div className="auth-gender-group">
+                {["male", "female"].map((gender) => (
+                  <label key={gender} className="auth-gender-option">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value={gender}
+                      checked={formData.gender === gender}
+                      onChange={handleChange}
+                    />
+                    {gender.charAt(0).toUpperCase() + gender.slice(1)}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" disabled={loading} className="btn btn-primary btn-block">
+              {loading ? "Creating account…" : "Create Account"}
+            </button>
           </form>
+
+          <p className="auth-footer-note">
+            Already have an account? <Link to="/login">Log in</Link>
+          </p>
         </div>
       </div>
     </div>

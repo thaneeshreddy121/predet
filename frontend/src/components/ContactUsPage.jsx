@@ -1,83 +1,144 @@
 import React, { useState } from "react";
-import { Send, Phone, Mail, MapPin, Users } from "lucide-react";
+import { Send, Mail, MapPin } from "lucide-react";
 
 const ContactUsPage = () => {
-  const [formData, setState] = useState({
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus("sending");
+    setError("");
+
+    try {
+      const response = await fetch(`${BASE_URL}/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "Message could not be sent.");
+      }
+
+      setStatus("sent");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err) {
+      // Backend endpoint may not exist yet in every deployment;
+      // let the visitor know rather than silently failing.
+      setStatus("error");
+      setError(err.message || "Something went wrong. Please email us directly.");
+    }
+  };
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center p-4 overflow-hidden">
-      {/* Glassmorphism container */}
-      <div className="relative z-10 w-full max-w-4xl flex flex-col md:flex-row rounded-2xl overflow-hidden shadow-2xl">
-        {/* Contact form section */}
-        <div className="w-full md:w-3/5 bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg p-8 border border-white border-opacity-20">
-          <h2 className="text-3xl font-bold mb-6 text-white">Contact Us</h2>
+    <div className="contact-page">
+      <div className="contact-shell">
+        {/* Form section */}
+        <div className="contact-form-side">
+          <h2>Contact us</h2>
 
-          <form className="space-y-6">
-            <div>
-              <label className="block text-white mb-2">Name</label>
+          {status === "sent" && (
+            <div className="state-banner state-banner--success message-animation" style={{ marginBottom: "1.25rem" }}>
+              Thanks — your message has been sent. We'll get back to you soon.
+            </div>
+          )}
+
+          {status === "error" && (
+            <div className="state-banner state-banner--error message-animation" style={{ marginBottom: "1.25rem" }}>
+              {error}
+            </div>
+          )}
+
+          <form className="auth-form" onSubmit={handleSubmit}>
+            <div className="field">
+              <label className="field-label">Name</label>
               <input
                 type="text"
-                className="w-full p-3 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20 text-white focus:outline-none focus:ring-2 focus:ring-[#0066CC]" // Updated focus ring color
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="field-input"
                 placeholder="Your name"
+                required
               />
             </div>
 
-            <div>
-              <label className="block text-white mb-2">Email</label>
+            <div className="field">
+              <label className="field-label">Email</label>
               <input
                 type="email"
-                className="w-full p-3 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20 text-white focus:outline-none focus:ring-2 focus:ring-[#0066CC]" // Updated focus ring color
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="field-input"
                 placeholder="your@email.com"
+                required
               />
             </div>
 
-            <div>
-              <label className="block text-white mb-2">Message</label>
+            <div className="field">
+              <label className="field-label">Message</label>
               <textarea
-                className="w-full p-3 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20 text-white h-32 resize-none focus:outline-none focus:ring-2 focus:ring-[#0066CC]" // Updated focus ring color
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                className="field-textarea"
+                rows="4"
                 placeholder="How can we help you?"
-              ></textarea>
+                required
+              />
             </div>
 
-            <button className="w-full bg-[#0066CC] hover:bg-[#004C99] text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center">
-              <Send className="mr-2 h-5 w-5" />
-              Send Message
+            <button type="submit" disabled={status === "sending"} className="btn btn-solid btn-block">
+              <Send size={17} />
+              {status === "sending" ? "Sending…" : "Send Message"}
             </button>
           </form>
         </div>
 
         {/* Info section */}
-        <div className="w-full md:w-2/5 bg-gradient-to-br from-[#0066CC] to-[#004C99] p-8 flex flex-col justify-between">
+        <div className="contact-info">
           <div>
-            <h3 className="text-2xl font-bold text-white mb-8">Get in touch</h3>
+            <h3>Get in touch</h3>
+            <p>Have a question about a prediction, a bug to report, or feedback on the models? Reach out.</p>
+          </div>
 
-            <div className="space-y-6">
-              <div className="flex items-center">
-                <div className="bg-white bg-opacity-20 p-3 rounded-full mr-4">
-                  <Mail className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-white opacity-70">Email</p>
-                  <p className="text-white font-semibold">medsai@gmail.com</p>
-                </div>
+          <div className="contact-detail-list">
+            <div className="contact-detail">
+              <span className="contact-detail-icon">
+                <Mail size={18} />
+              </span>
+              <div>
+                <p className="contact-detail-label">Email</p>
+                <p className="contact-detail-value">predet@gmail.com</p>
               </div>
+            </div>
 
-              <div className="flex items-center">
-                <div className="bg-white bg-opacity-20 p-3 rounded-full mr-4">
-                  <MapPin className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-white opacity-70">Address</p>
-                  <p className="text-white font-semibold">
-                    Christ College of Engineering
-                    <br />
-                    Irinjalakuda, Kerala
-                  </p>
-                </div>
+            <div className="contact-detail">
+              <span className="contact-detail-icon">
+                <MapPin size={18} />
+              </span>
+              <div>
+                <p className="contact-detail-label">Address</p>
+                <p className="contact-detail-value">
+                  LakiReddy BaliReddy College of Engineering
+                  <br />
+                  Mylavaram, Andhra Pradesh, India
+                </p>
               </div>
             </div>
           </div>

@@ -27,57 +27,61 @@ const HomePage = () => {
       {/* <Navbar /> */}
       <br />
 
-      {/* Hero Section - keeping original structure */}
+      {/* Hero */}
       <section className="hero-section">
-        <h2 className="hero-title">Your Health, Powered by AI</h2>
-        <p className="hero-description">
-          Start predicting diseases with our advanced AI models and take charge
-          of your health.
-        </p>
-        <div className="cta-buttons">
-          <Link to="/predict"><button className="cta-btn">Disease Prediction</button></Link>
-          <Link to="/diabetes"><button className="cta-btn">Diabetes Detector</button></Link>
-          
-          <button className="cta-btn" onClick={handleLearnMore}>Learn More</button>
+        <div>
+          <h2 className="hero-title">Read your symptoms like a vital sign</h2>
+          <p className="hero-description">
+            PREDET-AI turns the symptoms and clinical measurements you enter
+            into a clear, evidence-based prediction — so you know what to ask
+            a doctor before you ever sit down with one.
+          </p>
+          <div className="cta-buttons">
+            <Link to="/predict"><button className="cta-btn">Predict a disease</button></Link>
+            <Link to="/diabetes"><button className="cta-btn">Check for diabetes</button></Link>
+            <button className="cta-btn" onClick={handleLearnMore}>Learn more</button>
+          </div>
         </div>
-        {/* <img className="hero-image" src={healthApp} alt="image" /> */}
+        <svg className="vitals-waveform" viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M0 90 L70 90 L90 40 L110 130 L130 20 L150 90 L200 90 L215 70 L230 90 L420 90" />
+        </svg>
       </section>
 
-      {/* Features Section - keeping original layout */}
+      {/* Features */}
       <section className="features-section">
         <div className="feature-card">
-          <h3 className="feature-title">Disease Prediction using AI</h3>
+          <h3 className="feature-title">Disease prediction</h3>
           <p className="feature-description">
-            Our advanced machine learning models analyze symptoms and predict
-            potential diseases with high accuracy.
+            Enter your symptoms and PREDET-AI's models weigh them against known
+            patterns to surface the conditions most likely to explain them.
           </p>
         </div>
         <div className="feature-card">
-          <h3 className="feature-title">Dedicated Diabetes Detection</h3>
+          <h3 className="feature-title">Diabetes detector</h3>
           <p className="feature-description">
-            Use the integrated diabetes model with glucose, BMI, blood pressure,
-            age, insulin, and other clinical measurements.
+            A dedicated model built on glucose, BMI, blood pressure, age,
+            insulin, and other clinical measurements you provide.
           </p>
         </div>
         <div className="feature-card">
-          <h3 className="feature-title">Personalized Health Insights</h3>
+          <h3 className="feature-title">Personalized insights</h3>
           <p className="feature-description">
-            Review your prediction results and recommended precautions to
-            better understand the health information provided by MEDS-AI.
+            Every result comes with plain-language precautions, so the
+            output is something you can actually act on.
           </p>
         </div>
         <div className="feature-card">
-          <h3 className="feature-title">Verified Home Remedies Suggestions</h3>
+          <h3 className="feature-title">Home remedy suggestions</h3>
           <p className="feature-description">
-            Discover expert-reviewed home remedies for common conditions and
-            start improving your health naturally.
+            Reviewed home-care suggestions for common conditions, to try
+            alongside — not instead of — medical advice.
           </p>
         </div>
         <div className="feature-card">
-          <h3 className="feature-title">User-Friendly Reports</h3>
+          <h3 className="feature-title">A record you can return to</h3>
           <p className="feature-description">
-            Receive clear and actionable health reports that help you make
-            better health decisions.
+            Past predictions are saved to your account, so you can track
+            changes over time and share them with a clinician.
           </p>
         </div>
       </section>
@@ -104,17 +108,16 @@ const HomePage = () => {
         <div className="popup-overlay" onClick={() => setShowLearnMorePopup(false)}>
           <div className="popup-content" onClick={(e) => e.stopPropagation()}>
             <div className="popup-header">
-              <h3 className="popup-title">Learning Complete!</h3>
+              <h3 className="popup-title">How MEDS-AI works</h3>
               <button className="popup-close" onClick={() => setShowLearnMorePopup(false)}>×</button>
             </div>
             <div className="popup-body learn-more-content">
-              <div className="congratulations">Congratulations! You've learned more! 🎉</div>
-              <p>Your brain has officially expanded by approximately 0.0001%</p>
-              <p>Side effects may include: feeling smarter, urge to predict diseases, and sudden interest in AI technologies.</p>
-              <img src="https://media.giphy.com/media/d3mlE7uhX8KFgEmY/source.gif" alt="Smart GIF" style={{ width: '80%', borderRadius: '10px', marginTop: '15px' }} />
+              <p><strong>1. You enter your symptoms or measurements.</strong> Disease prediction takes a set of symptoms; the diabetes detector takes clinical values like glucose, BMI, and blood pressure.</p>
+              <p><strong>2. Our models compare them against known patterns.</strong> Each model was trained on labeled medical data to weigh which conditions best fit the inputs you give.</p>
+              <p><strong>3. You get a result and next steps.</strong> Predictions come with plain-language precautions and home-care suggestions — a starting point for a conversation with a doctor, not a diagnosis.</p>
             </div>
             <div className="popup-footer">
-              <button onClick={() => setShowLearnMorePopup(false)}>Close (You're Smarter Now)</button>
+              <button onClick={() => setShowLearnMorePopup(false)}>Close</button>
             </div>
           </div>
         </div>
@@ -129,10 +132,10 @@ const HomePage = () => {
               <button className="popup-close" onClick={() => setShowPrivacyPopup(false)}>×</button>
             </div>
             <div className="popup-body privacy-content">
-              <p>Last Updated: April 3, 2025</p>
+              <p>Last Updated: September 26, 2026</p>
               
               <h3>Introduction</h3>
-              <p>Welcome to HealthAI. We respect your privacy and are committed to protecting your personal health information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our disease prediction service.</p>
+              <p>Welcome to PREDET-AI. We respect your privacy and are committed to protecting your personal health information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our disease prediction service.</p>
               
               <h3>Information We Collect</h3>
               <p>We collect the following types of information:</p>
@@ -169,7 +172,7 @@ const HomePage = () => {
               <p>The disease predictions provided are for informational purposes only and should not replace professional medical advice. Always consult with a qualified healthcare provider regarding any health concerns.</p>
               
               <h3>Contact Us</h3>
-              <p>If you have questions about this Privacy Policy, please contact our Data Protection Officer at privacy@healthai.example.com</p>
+              <p>If you have questions about this Privacy Policy, please contact our Data Protection Officer at privacy@predetai.example.com</p>
             </div>
             <div className="popup-footer">
               <button onClick={() => setShowPrivacyPopup(false)}>I Understand</button>

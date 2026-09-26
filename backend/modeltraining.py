@@ -200,7 +200,7 @@ print("-" * 60)
 rf_start = time.time()
 
 rf_model = RandomForestClassifier(
-    n_estimators=200,
+    n_estimators=100,
     max_depth=None,
     min_samples_split=2,
     min_samples_leaf=1,
@@ -234,7 +234,7 @@ rf_path = os.path.join(
 joblib.dump(
     rf_model,
     rf_path,
-    compress=3
+    compress=("lzma", 9)
 )
 
 print("Random Forest saved.")
