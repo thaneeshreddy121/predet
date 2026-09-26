@@ -21,7 +21,10 @@ DATA_PATH = os.path.join(BASE_DIR, "datasets", "Training.csv")
 
 print("[Predictor] Loading trained models...")
 
-rf_model = joblib.load(os.path.join(MODELS_DIR, "rf_model.pkl"))
+#rf_model = joblib.load(os.path.join(MODELS_DIR, "rf_model.pkl"))
+rf_model = joblib.load(
+    os.path.join(MODELS_DIR, "rf_depth30", "rf_model.pkl")
+)
 nb_model = joblib.load(os.path.join(MODELS_DIR, "nb_model.pkl"))
 xgb_model = joblib.load(os.path.join(MODELS_DIR, "xgb_model.pkl"))
 label_encoder = joblib.load(os.path.join(MODELS_DIR, "label_encoder.pkl"))

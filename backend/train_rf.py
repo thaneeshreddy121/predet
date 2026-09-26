@@ -17,7 +17,14 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 TRAIN_PATH = os.path.join(BASE_DIR, "datasets", "Training.csv")
 TEST_PATH = os.path.join(BASE_DIR, "datasets", "Testing.csv")
-MODEL_DIR = os.path.join(BASE_DIR, "ml_models")
+
+# Separate experimental model directory.
+# Existing RF models remain untouched.
+MODEL_DIR = os.path.join(
+    BASE_DIR,
+    "ml_models",
+    "rf_depth30"
+)
 
 os.makedirs(MODEL_DIR, exist_ok=True)
 
@@ -83,7 +90,6 @@ label_encoder = LabelEncoder()
 y_train = label_encoder.fit_transform(y_train_raw)
 y_test = label_encoder.transform(y_test_raw)
 
-# Keep existing label encoder compatible with the new RF
 joblib.dump(
     label_encoder,
     os.path.join(MODEL_DIR, "label_encoder.pkl")
@@ -113,21 +119,29 @@ joblib.dump(
 # ============================================================
 
 print("\n" + "=" * 60)
-print("TRAINING NEW LIGHTWEIGHT RANDOM FOREST")
+print("TRAINING RANDOM FOREST — DEPTH 30")
 print("=" * 60)
 
 start = time.time()
 
 rf_model = RandomForestClassifier(
-    n_estimators=50,
-    max_depth=20,
+    n_estimators=100,
+    max_depth=30,
     min_samples_split=2,
-    min_samples_leaf=2,
+    min_samples_leaf=1,
     max_features="sqrt",
     n_jobs=-1,
     random_state=42,
     class_weight="balanced"
 )
+
+print("\nRandom Forest configuration:")
+print(f"  n_estimators     : {rf_model.n_estimators}")
+print(f"  max_depth        : {rf_model.max_depth}")
+print(f"  min_samples_split: {rf_model.min_samples_split}")
+print(f"  min_samples_leaf : {rf_model.min_samples_leaf}")
+print(f"  max_features     : {rf_model.max_features}")
+print(f"  class_weight     : {rf_model.class_weight}")
 
 print("\nTraining Random Forest...")
 
@@ -135,9 +149,12 @@ rf_model.fit(X_train, y_train)
 
 print("Training completed.")
 
+
 # ============================================================
 # EVALUATION
 # ============================================================
+
+print("\nEvaluating Random Forest...")
 
 rf_pred = rf_model.predict(X_test)
 
@@ -152,6 +169,29 @@ print(f"Training time: {time.time() - start:.1f} seconds")
 
 
 # ============================================================
+# MODEL STRUCTURE
+# ============================================================
+
+total_nodes = sum(
+    tree.tree_.node_count
+    for tree in rf_model.estimators_
+)
+
+average_nodes = total_nodes / len(rf_model.estimators_)
+
+maximum_depth = max(
+    tree.tree_.max_depth
+    for tree in rf_model.estimators_
+)
+
+print("\nModel structure:")
+print(f"  Trees              : {len(rf_model.estimators_)}")
+print(f"  Total nodes        : {total_nodes}")
+print(f"  Average nodes/tree : {average_nodes:.1f}")
+print(f"  Maximum tree depth : {maximum_depth}")
+
+
+# ============================================================
 # SAVE MODEL
 # ============================================================
 
@@ -160,11 +200,14 @@ model_path = os.path.join(
     "rf_model.pkl"
 )
 
+print("\nSaving model...")
+
 joblib.dump(
     rf_model,
     model_path,
     compress=3
 )
+
 
 # ============================================================
 # MODEL SIZE
@@ -172,11 +215,18 @@ joblib.dump(
 
 model_size_mb = os.path.getsize(model_path) / (1024 * 1024)
 
+
+# ============================================================
+# FINAL OUTPUT
+# ============================================================
+
 print("\n" + "=" * 60)
-print("MODEL SAVED")
+print("DEPTH-30 RANDOM FOREST SAVED")
 print("=" * 60)
 
 print(f"Location : {model_path}")
 print(f"Size     : {model_size_mb:.2f} MB")
+print(f"Accuracy : {rf_accuracy * 100:.2f}%")
 
-print("\nRandom Forest retraining complete.")
+print("\nExisting RF models were NOT modified.")
+print("Training complete.")
