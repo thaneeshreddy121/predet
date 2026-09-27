@@ -172,7 +172,7 @@ const HomePage = () => {
               <p>The disease predictions provided are for informational purposes only and should not replace professional medical advice. Always consult with a qualified healthcare provider regarding any health concerns.</p>
               
               <h3>Contact Us</h3>
-              <p>If you have questions about this Privacy Policy, please contact our Data Protection Officer at privacy@predetai.example.com</p>
+              <p>If you have questions about this Privacy Policy, please contact our Data Protection Officer at thaneeshcsm@gmail.com</p>
             </div>
             <div className="popup-footer">
               <button onClick={() => setShowPrivacyPopup(false)}>I Understand</button>

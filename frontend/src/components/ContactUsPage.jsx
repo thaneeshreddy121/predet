@@ -124,7 +124,7 @@ const ContactUsPage = () => {
               </span>
               <div>
                 <p className="contact-detail-label">Email</p>
-                <p className="contact-detail-value">predet@gmail.com</p>
+                <p className="contact-detail-value">thaneeshcsm@gmail.com</p>
               </div>
             </div>
 
