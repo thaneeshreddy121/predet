@@ -1,4 +1,3 @@
-
 import "./App.css";
 
 import {
@@ -7,9 +6,13 @@ import {
 } from "react-router-dom";
 
 import {
-  AuthProvider
+  AuthProvider,
+  AuthContext
 } from "./context/AuthContext";
 
+import {
+  useContext
+} from "react";
 
 import HomePage
   from "./components/mainHome";
@@ -42,96 +45,120 @@ import DiabetesPredictor
   from "./components/DiabetesPredictor";
 
 
-function App() {
+function AppContent() {
+
+  const { loading } = useContext(AuthContext);
+
+  // Wait until the stored token has been verified
+  // before rendering the application.
+  if (loading) {
+    return (
+      <div className="App">
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   return (
+    <div className="App">
 
-    <AuthProvider>
+      <Navbar />
 
-      <div className="App">
+      <Routes>
 
-        <Navbar />
+        {/* Home */}
+        <Route
+          path="/"
+          element={
+            <HomePage />
+          }
+        />
 
-        <Routes>
+        {/* Authentication */}
+        <Route
+          path="/login"
+          element={
+            <Login />
+          }
+        />
 
-          {/* Home */}
-          <Route
-            path="/"
-            element={
-              <HomePage />
-            }
-          />
+        <Route
+          path="/signup"
+          element={
+            <Signup />
+          }
+        />
 
-          {/* Authentication */}
-          <Route
-            path="/login"
-            element={
-              <Login />
-            }
-          />
+        <Route
+          path="/forgot-password"
+          element={
+            <ForgotPassword />
+          }
+        />
 
-          <Route
-            path="/signup"
-            element={
-              <Signup />
-            }
-          />
+        {/* Disease Prediction */}
+        <Route
+          path="/predict"
+          element={
+            <Predict />
+          }
+        />
 
-          <Route
-            path="/forgot-password"
-            element={
-              <ForgotPassword />
-            }
-          />
+        {/* Diabetes */}
+        <Route
+          path="/diabetes"
+          element={
+            <DiabetesPredictor />
+          }
+        />
 
-          {/* Disease Prediction */}
-          <Route
-            path="/predict"
-            element={
-              <Predict />
-            }
-          />
+        {/* Information */}
+        <Route
+          path="/aboutus"
+          element={
+            <AboutUs />
+          }
+        />
 
-          {/* Diabetes */}
-          <Route
-            path="/diabetes"
-            element={
-              <DiabetesPredictor />
-            }
-          />
+        <Route
+          path="/contact"
+          element={
+            <ContactUsPage />
+          }
+        />
 
-          {/* Information */}
-          <Route
-            path="/aboutus"
-            element={
-              <AboutUs />
-            }
-          />
+        {/* Prediction History */}
+        <Route
+          path="/previous-predictions"
+          element={
+            <PreviousPrediction />
+          }
+        />
 
-          <Route
-            path="/contact"
-            element={
-              <ContactUsPage />
-            }
-          />
+      </Routes>
 
-          {/* Prediction History */}
-          <Route
-            path="/previous-predictions"
-            element={
-              <PreviousPrediction />
-            }
-          />
-
-        </Routes>
-
-      </div>
-
-    </AuthProvider>
+    </div>
   );
 }
 
 
+function App() {
+
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}
 
 
 export default App;
