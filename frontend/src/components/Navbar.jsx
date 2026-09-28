@@ -1,135 +1,55 @@
-import React, { useState, useContext, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import logo from "../assets/medsai-logo2-white.png";
-import { AuthContext } from "../context/AuthContext";
+import { useContext, useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
-
-const Navbar = ({ className }) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default function Navbar() {
+  const { isAuthenticated, user, logout } = useContext(AuthContext);
+  const [open, setOpen] = useState(false);
+  const [motionOff, setMotionOff] = useState(false);
+  const toggleRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, user, logout } = useContext(AuthContext);
-  
-  const currentPath = location.pathname;
-
-  const isActive = (path) => {
-    if (path === "/") {
-      return currentPath === "/" ? "active" : "";
-    }
-    return currentPath.includes(path) ? "active" : "";
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  // Close menu when route changes
+  useEffect(() => { setOpen(false); }, [location.pathname]);
   useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location.pathname]);
-
-  // CSS for the logo animation
-
+    const query = window.matchMedia('(max-width: 1100px)');
+    const closeDesktop = () => { if (!query.matches) setOpen(false); };
+    query.addEventListener('change', closeDesktop);
+    return () => query.removeEventListener('change', closeDesktop);
+  }, []);
+  useEffect(() => {
+    document.documentElement.dataset.motion = motionOff ? 'off' : 'on';
+    return () => { delete document.documentElement.dataset.motion; };
+  }, [motionOff]);
+  useEffect(() => {
+    if (!open) return;
+    const escape = event => {
+      if (event.key === 'Escape') { setOpen(false); toggleRef.current?.focus(); }
+    };
+    document.addEventListener('keydown', escape);
+    return () => document.removeEventListener('keydown', escape);
+  }, [open]);
+  const links = [
+    ['/', 'Home'], ['/predict', 'Symptoms'], ['/diabetes', 'Diabetes'],
+    ['/aboutus', 'About'], ['/contact', 'Contact'],
+    ...(isAuthenticated ? [['/previous-predictions', 'History']] : []),
+  ];
   return (
-    <>
-      <header className={`navigation-bar ${className || ""}`}>
-        <Link to="/" className="logo-container" style={{ textDecoration: "none" }}>
-          <img
-            className="logo"
-            src={logo}
-            alt="MEDS-AI logo"
-          />
-          <span
-            className="app-name"
-          >
-            PREDET-AI
-          </span>
+    <header className="nova-header">
+      <a href="#nova-content" className="nova-skip">Skip navigation</a>
+      <nav className="nova-nav" aria-label="Main navigation">
+        <Link to="/" className="nova-brand" aria-label="PREDET-AI home">
+          <span className="nova-brand-icon" aria-hidden="true">+</span>
+          <span>PREDET<span className="nova-brand-accent">-AI</span></span>
         </Link>
-        
-        {/* Mobile Menu Toggle */}
-        <div className="mobile-menu-toggle" onClick={toggleMenu}>
-          {isMenuOpen ? <X size={24} color="white" /> : <Menu size={24} color="white" />}
+        <button ref={toggleRef} type="button" className="nova-toggle" aria-expanded={open} aria-controls="nova-links" onClick={() => setOpen(value => !value)}>{open ? 'Close menu ×' : 'Menu ☰'}</button>
+        <div className={`nova-links ${open ? 'is-open' : ''}`} id="nova-links">
+          {links.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `nova-link${isActive ? ' is-active' : ''}`}>{label}</NavLink>)}
+          <div className="nova-account">
+            {isAuthenticated ? <><span className="nova-greeting">Hi, {user?.name || 'there'}</span><button className="nova-signin" type="button" onClick={() => { logout(); navigate('/login'); }}>Sign out</button></> : <><Link to="/login" className="nova-link">Sign in</Link><Link to="/signup" className="nova-signin">Get started ↗</Link></>}
+          </div>
         </div>
-
-        <ul className={`nav-links ${isMenuOpen ? 'mobile-menu-open' : ''}`}>
-          <li>
-            <Link to="/" className={isActive("/")}>
-              Home
-            </Link>
-          </li>
-          
-          {isAuthenticated ? (
-            // Navigation items for logged-in users
-            <>
-              <li>
-                <Link to="/predict" className={isActive("/predict")}>
-                  Predict Disease
-                </Link>
-              </li>
-              <li>
-                <Link to="/diabetes" className={isActive("/diabetes")}>
-                  Diabetes Detector
-                </Link>
-              </li>
-              <li>
-                <Link to="/previous-predictions" className={isActive("/previous-predictions")}>
-                  Previous Predictions
-                </Link>
-              </li>
-              <li className="text-white">|</li>
-              <li>
-                <span className="nav-item user-greeting">Hi, {user?.name}</span>
-              </li>
-              <li>
-                <button 
-                  onClick={handleLogout}
-                  className="nav-item logout-btn"
-                >
-                  Logout
-                </button>
-              </li>
-            </>
-          ) : (
-            // Navigation items for guests/not logged-in users
-            <>
-              <li>
-                <Link to="/login" className={isActive("/login")}>
-                  Login
-                </Link>
-              </li>
-              <li>
-                <Link to="/predict" className={isActive("/predict")}>
-                  Predict Disease
-                </Link>
-              </li>
-              <li>
-                <Link to="/diabetes" className={isActive("/diabetes")}>
-                  Diabetes Detector
-                </Link>
-              </li>
-              <li>
-                <Link to="/aboutus" className={isActive("/aboutus")}>
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className={isActive("/contact")}>
-                  Contact
-                </Link>
-              </li>
-            </>
-          )}
-        </ul>
-      </header>
-      
-    </>
+      </nav>
+      <div id="nova-content" tabIndex={-1} className="nova-content-anchor" />
+    </header>
   );
-};
-
-export default Navbar;
+}

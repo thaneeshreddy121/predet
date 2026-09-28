@@ -1,187 +1,74 @@
-import React, { useState } from "react";
+import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import './Home3D.css';
 
-import { Link } from "react-router-dom";
+const tools = [
+  { mark: '✧', tag: 'EXPLORE SYMPTOMS', title: 'Start with what you feel.', text: 'Organize your symptoms and explore model-generated insights to discuss with a healthcare professional.', to: '/predict', action: 'Explore symptoms', tone: 'mint' },
+  { mark: '◈', tag: 'DIABETES INSIGHTS', title: 'Give your numbers context.', text: 'Use the dedicated diabetes tool with your clinical measurements. Results are informational, not a diagnosis.', to: '/diabetes', action: 'Open diabetes tool', tone: 'blue' },
+  { mark: '↗', tag: 'YOUR HISTORY', title: 'Keep the conversation going.', text: 'Return to your saved predictions when signed in, and review them before your next appointment.', to: '/previous-predictions', action: 'View prediction history', tone: 'peach' },
+];
+const questions = [
+  ['Is this a medical diagnosis?', 'No. PREDET-AI provides informational, model-generated predictions. A qualified healthcare professional should interpret your symptoms and measurements.'],
+  ['How do I get started?', 'Choose symptom analysis or the diabetes tool. Follow the prompts in the existing application and review the result with a healthcare professional.'],
+  ['Can I return to my predictions?', 'Sign in to access the prediction history available in your account.'],
+  ['What should I know before entering health data?', 'Enter only information you are comfortable sharing. Contact the project team for details about how your information is processed.'],
+];
 
-const HomePage = () => {
-  // State for controlling popups
-  const [showLearnMorePopup, setShowLearnMorePopup] = useState(false);
-  const [showPrivacyPopup, setShowPrivacyPopup] = useState(false);
+function TiltCard({ children, className = '' }) {
+  const ref = useRef(null);
+  function move(e) {
+    if (!window.matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)').matches || e.currentTarget.closest('[data-motion="off"]')) return;
+    const b = e.currentTarget.getBoundingClientRect();
+    ref.current.style.setProperty('--rx', `${-(e.clientY - b.top - b.height / 2) / b.height * 7}deg`);
+    ref.current.style.setProperty('--ry', `${(e.clientX - b.left - b.width / 2) / b.width * 7}deg`);
+  }
+  function reset() { ref.current.style.setProperty('--rx', '0deg'); ref.current.style.setProperty('--ry', '0deg'); }
+  return <article ref={ref} className={`p3-tilt ${className}`} onPointerMove={move} onPointerLeave={reset}>{children}</article>;
+}
 
-  // Function to handle the Learn More button click
-  const handleLearnMore = () => {
-    setShowLearnMorePopup(true);
-  };
-
-  // Function to handle the Privacy Policy link click
-  const handlePrivacyPolicy = (e) => {
-    e.preventDefault();
-    setShowPrivacyPopup(true);
-  };
-
+export default function HomePage() {
+  const root = useRef(null);
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
+    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const nodes = root.current.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.remove('p3-pending'); observer.unobserve(entry.target); }
+    }), { threshold: 0.08 });
+    nodes.forEach(node => { node.classList.add('p3-pending'); observer.observe(node); });
+    return () => { observer.disconnect(); nodes.forEach(node => node.classList.remove('p3-pending')); };
+  }, []);
   return (
-    <div
-      className="homepage-container"
-      style={{ position: "relative", overflow: "hidden" }}
-    >
-      {/* Navbar Component */}
-      {/* <Navbar /> */}
-      <br />
-
-      {/* Hero */}
-      <section className="hero-section">
-        <div>
-          <h2 className="hero-title">Read your symptoms like a vital sign</h2>
-          <p className="hero-description">
-            PREDET-AI turns the symptoms and clinical measurements you enter
-            into a clear, evidence-based prediction — so you know what to ask
-            a doctor before you ever sit down with one.
-          </p>
-          <div className="cta-buttons">
-            <Link to="/predict"><button className="cta-btn">Predict a disease</button></Link>
-            <Link to="/diabetes"><button className="cta-btn">Check for diabetes</button></Link>
-            <button className="cta-btn" onClick={handleLearnMore}>Learn more</button>
+    <main ref={root} className="p3-home" id="p3-top" data-motion={paused ? 'off' : 'on'}>
+      <div className="p3-wrap">
+        <div className="p3-topline"><span>PREDET-AI / HEALTH, WITH PERSPECTIVE</span></div>
+        <section className="p3-hero" aria-labelledby="p3-title">
+          <div className="p3-copy">
+            <span className="p3-eyebrow"><i aria-hidden="true" /> AI-assisted health insights</span>
+            <h1 id="p3-title">A clearer picture<br />of <em>your health.</em></h1>
+            <p>Turn symptoms and clinical measurements into a starting point for a more informed conversation with your doctor.</p>
+            <div className="p3-actions"><Link className="p3-button p3-primary" to="/predict">Explore my symptoms <span aria-hidden="true">↗</span></Link><Link className="p3-button p3-secondary" to="/diabetes">Diabetes insights <span aria-hidden="true">→</span></Link></div>
+            <p className="p3-caption">Information to support a conversation. Never a diagnosis.</p>
+            <a className="p3-textlink" href="#p3-how">Discover how it works ↓</a>
           </div>
-        </div>
-        <svg className="vitals-waveform" viewBox="0 0 420 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M0 90 L70 90 L90 40 L110 130 L130 20 L150 90 L200 90 L215 70 L230 90 L420 90" />
-        </svg>
-      </section>
-
-      {/* Features */}
-      <section className="features-section">
-        <div className="feature-card">
-          <h3 className="feature-title">Disease prediction</h3>
-          <p className="feature-description">
-            Enter your symptoms and PREDET-AI's models weigh them against known
-            patterns to surface the conditions most likely to explain them.
-          </p>
-        </div>
-        <div className="feature-card">
-          <h3 className="feature-title">Diabetes detector</h3>
-          <p className="feature-description">
-            A dedicated model built on glucose, BMI, blood pressure, age,
-            insulin, and other clinical measurements you provide.
-          </p>
-        </div>
-        <div className="feature-card">
-          <h3 className="feature-title">Personalized insights</h3>
-          <p className="feature-description">
-            Every result comes with plain-language precautions, so the
-            output is something you can actually act on.
-          </p>
-        </div>
-        <div className="feature-card">
-          <h3 className="feature-title">Home remedy suggestions</h3>
-          <p className="feature-description">
-            Reviewed home-care suggestions for common conditions, to try
-            alongside — not instead of — medical advice.
-          </p>
-        </div>
-        <div className="feature-card">
-          <h3 className="feature-title">A record you can return to</h3>
-          <p className="feature-description">
-            Past predictions are saved to your account, so you can track
-            changes over time and share them with a clinician.
-          </p>
-        </div>
-      </section>
-
-      {/* Footer with original blue box */}
-      <footer className="homepage-footer">
-        <div className="footer-links">
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/aboutus">About Us</Link>
-            </li>
-            <li>
-              <a href="#privacy" onClick={handlePrivacyPolicy}>Privacy Policy</a>
-            </li>
-          </ul>
-        </div>
-      </footer>
-
-      {/* Learn More Popup */}
-      {showLearnMorePopup && (
-        <div className="popup-overlay" onClick={() => setShowLearnMorePopup(false)}>
-          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-            <div className="popup-header">
-              <h3 className="popup-title">How MEDS-AI works</h3>
-              <button className="popup-close" onClick={() => setShowLearnMorePopup(false)}>×</button>
-            </div>
-            <div className="popup-body learn-more-content">
-              <p><strong>1. You enter your symptoms or measurements.</strong> Disease prediction takes a set of symptoms; the diabetes detector takes clinical values like glucose, BMI, and blood pressure.</p>
-              <p><strong>2. Our models compare them against known patterns.</strong> Each model was trained on labeled medical data to weigh which conditions best fit the inputs you give.</p>
-              <p><strong>3. You get a result and next steps.</strong> Predictions come with plain-language precautions and home-care suggestions — a starting point for a conversation with a doctor, not a diagnosis.</p>
-            </div>
-            <div className="popup-footer">
-              <button onClick={() => setShowLearnMorePopup(false)}>Close</button>
-            </div>
+          <div className="p3-scene" aria-hidden="true">
+            <div className="p3-grid" /><div className="p3-halo" /><div className="p3-orbit p3-orbit-a" /><div className="p3-orbit p3-orbit-b" />
+            <div className="p3-orb"><div className="p3-cross" /><span className="p3-orb-label">HEALTH IN FOCUS</span></div>
+            <div className="p3-float p3-float-a"><span className="p3-mini-icon">✧</span><div><small>YOUR STARTING POINT</small><strong>Understand your symptoms</strong></div></div>
+            <div className="p3-float p3-float-b"><small>BUILT AROUND YOU</small><strong>Clarity. One step at a time.</strong><svg viewBox="0 0 220 45"><path d="M0 25H42L53 12L65 37L81 4L94 25H123L137 18L149 25H220" /></svg></div>
+            <span className="p3-dot p3-dot-a" /><span className="p3-dot p3-dot-b" />
           </div>
-        </div>
-      )}
-
-      {/* Privacy Policy Popup */}
-      {showPrivacyPopup && (
-        <div className="popup-overlay" onClick={() => setShowPrivacyPopup(false)}>
-          <div className="popup-content" onClick={(e) => e.stopPropagation()}>
-            <div className="popup-header">
-              <h3 className="popup-title">Privacy Policy</h3>
-              <button className="popup-close" onClick={() => setShowPrivacyPopup(false)}>×</button>
-            </div>
-            <div className="popup-body privacy-content">
-              <p>Last Updated: September 26, 2026</p>
-              
-              <h3>Introduction</h3>
-              <p>Welcome to PREDET-AI. We respect your privacy and are committed to protecting your personal health information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our disease prediction service.</p>
-              
-              <h3>Information We Collect</h3>
-              <p>We collect the following types of information:</p>
-              <p><strong>Personal Information:</strong> Name, email address, age, gender, and contact details.</p>
-              <p><strong>Health Information:</strong> Symptoms, medical history, and other health-related data you provide for prediction purposes.</p>
-              <p><strong>Usage Data:</strong> Information about how you interact with our application, including features used and time spent.</p>
-              
-              <h3>How We Use Your Information</h3>
-              <p>We use your information to:</p>
-              <p>• Provide accurate disease predictions based on your symptoms</p>
-              <p>• Recommend appropriate healthcare professionals</p>
-              <p>• Improve our AI models and prediction algorithms</p>
-              <p>• Communicate important updates about our service</p>
-              <p>• Ensure the security and functionality of our platform</p>
-              
-              <h3>Data Security</h3>
-              <p>We implement strict security measures to protect your personal and health information. This includes encryption, secure servers, regular security audits, and strict access controls for our staff.</p>
-              
-              <h3>Sharing Your Information</h3>
-              <p>We do not sell your personal information. We may share anonymized data with:</p>
-              <p>• Healthcare professionals you choose to connect with</p>
-              <p>• Research partners (with anonymized data only)</p>
-              <p>• Service providers who help us operate our platform</p>
-              
-              <h3>Your Rights</h3>
-              <p>You have the right to:</p>
-              <p>• Access your personal information</p>
-              <p>• Correct inaccurate information</p>
-              <p>• Delete your account and associated data</p>
-              <p>• Object to certain processing of your data</p>
-              <p>• Export your data in a portable format</p>
-              
-              <h3>Important Medical Disclaimer</h3>
-              <p>The disease predictions provided are for informational purposes only and should not replace professional medical advice. Always consult with a qualified healthcare provider regarding any health concerns.</p>
-              
-              <h3>Contact Us</h3>
-              <p>If you have questions about this Privacy Policy, please contact our Data Protection Officer at thaneeshcsm@gmail.com</p>
-            </div>
-            <div className="popup-footer">
-              <button onClick={() => setShowPrivacyPopup(false)}>I Understand</button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+        </section>
+        <div className="p3-strip" data-reveal><span>One place to begin.</span><span>Symptom analysis</span><span>Diabetes insights</span><span>Prediction history</span></div>
+        <section className="p3-section" id="p3-tools" aria-labelledby="p3-tools-title">
+          <div className="p3-section-head" data-reveal><div><span className="p3-kicker">A LITTLE CLARITY GOES A LONG WAY</span><h2 id="p3-tools-title">Your next step,<br />made simpler.</h2></div><p>Thoughtfully organized tools. Clearer questions. A more useful conversation about your health.</p></div>
+          <div className="p3-cards">{tools.map(tool => <div key={tool.to} data-reveal><TiltCard className={`p3-card p3-${tool.tone}`}><div className="p3-card-top"><span className="p3-tool-icon" aria-hidden="true">{tool.mark}</span><span className="p3-kicker">{tool.tag}</span></div><h3>{tool.title}</h3><p>{tool.text}</p><Link to={tool.to}>{tool.action}<span aria-hidden="true">↗</span></Link></TiltCard></div>)}</div>
+        </section>
+        <section className="p3-journey p3-section" id="p3-how" aria-labelledby="p3-how-title" data-reveal><div><span className="p3-kicker">FROM INPUT TO INSIGHT</span><h2 id="p3-how-title">Less guesswork.<br />More perspective.</h2><Link className="p3-button p3-primary" to="/predict">Take the first step ↗</Link></div><ol className="p3-steps">{[['Share your inputs', 'Select symptoms or enter the measurements requested by the diabetes tool.'], ['Explore the output', 'Review the model-generated result and available precautions.'], ['Talk to a professional', 'Use the information as a starting point, not a replacement for clinical advice.']].map(([title, text], i) => <li key={title}><span className="p3-step-number">0{i + 1}</span><div><h3>{title}</h3><p>{text}</p></div></li>)}</ol></section>
+        <section className="p3-section p3-faq" aria-labelledby="p3-faq-title" data-reveal><div><span className="p3-kicker">GOOD QUESTIONS, CLEAR ANSWERS</span><h2 id="p3-faq-title">Before you begin.</h2><p>Want to know more about the project?</p><Link className="p3-textlink" to="/aboutus">Meet PREDET-AI →</Link></div><div>{questions.map(([question, answer]) => <details key={question}><summary>{question}</summary><p>{answer}</p></details>)}</div></section>
+        <aside className="p3-disclaimer"><strong>Important to know</strong><p>PREDET-AI is for educational and informational use only. It does not provide a medical diagnosis or replace professional healthcare advice. Do not use this tool for emergencies.</p></aside>
+        <footer className="p3-footer"><div><strong>PREDET-AI<span aria-hidden="true"> ✧</span></strong><p>A clearer starting point.</p></div><nav aria-label="Footer"><a href="#p3-top">Back to top ↑</a></nav></footer>
+      </div>
+    </main>
   );
-};
-
-export default HomePage;
+}
